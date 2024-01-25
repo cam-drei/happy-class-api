@@ -6,6 +6,12 @@ Rails.application.routes.draw do
       devise_scope :user do
         post '/login', to: 'sessions#create'
       end
+
+      resources :users do
+        member do
+          get 'enrolled_courses', to: 'users#enrolled_courses'
+        end
+      end
     end
   end
 
