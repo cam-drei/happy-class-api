@@ -6,7 +6,10 @@ class Api::V1::SessionsController < Devise::SessionsController
 
     if resource
       sign_in(:user, resource)
-      render json: { token: resource.authentication_token }
+      render json: { 
+        token: resource.authentication_token,
+        user: resource.as_json(only: [:id, :email])
+      }
     else
       render json: { error: 'Invalid credentials' }, status: :unauthorized
     end
