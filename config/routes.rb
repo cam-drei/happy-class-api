@@ -7,8 +7,8 @@ Rails.application.routes.draw do
         post '/login', to: 'sessions#create'
       end
 
-      resources :users do
-        member do
+      resources :users, only: [] do
+        collection do
           get 'enrolled_courses', to: 'users#enrolled_courses'
         end
       end
