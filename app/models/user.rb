@@ -8,6 +8,8 @@ class User < ApplicationRecord
   before_save :ensure_authentication_token
   has_many :enroll_courses
   has_many :courses, through: :enroll_courses
+  has_many :enroll_lessons
+  has_many :lessons, through: :enroll_lessons
 
   def enrolled_course_names
     courses.pluck(:name)
