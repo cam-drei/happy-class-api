@@ -11,6 +11,7 @@ Rails.application.routes.draw do
         collection do
           get 'enrolled_courses', to: 'users#enrolled_courses'
           get 'enrolled_courses/:course_id/lessons', to: 'courses#lessons_for_course'
+          get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects', to: 'lessons#subjects_for_course'
         end
       end
 
