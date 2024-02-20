@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_20_021616) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_20_090325) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -29,15 +29,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_20_021616) do
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_enroll_courses_on_course_id"
     t.index ["user_id"], name: "index_enroll_courses_on_user_id"
-  end
-
-  create_table "enroll_lessons", force: :cascade do |t|
-    t.bigint "lesson_id", null: false
-    t.bigint "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["lesson_id"], name: "index_enroll_lessons_on_lesson_id"
-    t.index ["user_id"], name: "index_enroll_lessons_on_user_id"
   end
 
   create_table "lessons", force: :cascade do |t|
@@ -77,8 +68,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_20_021616) do
 
   add_foreign_key "enroll_courses", "courses"
   add_foreign_key "enroll_courses", "users"
-  add_foreign_key "enroll_lessons", "lessons"
-  add_foreign_key "enroll_lessons", "users"
   add_foreign_key "lessons", "courses"
   add_foreign_key "subjects", "courses"
   add_foreign_key "subjects", "lessons"
