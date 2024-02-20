@@ -12,6 +12,10 @@ Rails.application.routes.draw do
           get 'enrolled_courses', to: 'users#enrolled_courses'
         end
       end
+
+      resources :courses, only: [] do
+        resources :lessons, only: [:index]
+      end
     end
   end
 
