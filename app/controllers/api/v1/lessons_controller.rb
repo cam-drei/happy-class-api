@@ -7,11 +7,12 @@ class Api::V1::LessonsController < ApplicationController
     render json: lessons
   end
 
-  def subjects_for_course
+  def lesson_details
     course = current_user.courses.find(params[:course_id])
     lesson = course.lessons.find(params[:lesson_id])
     subjects = lesson.subjects
-    render json: { subjects: subjects }, status: :ok
+    contents = lesson.contents
+    render json: { subjects: subjects, contents: contents }, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Lesson not found' }, status: :not_found
   end
