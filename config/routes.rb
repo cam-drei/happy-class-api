@@ -15,6 +15,15 @@ Rails.application.routes.draw do
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects', to: 'lessons#lesson_details'
           get 'enrolled_courses/:course_id/lessons/:lesson_id/contents', to: 'lessons#lesson_details'
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects/:subject_id/contents', to: 'subjects#subject_details'
+
+          put 'enrolled_courses/:course_id/mark_done', to: 'courses#mark_course_as_done'
+          put 'enrolled_courses/:course_id/unmark_done', to: 'courses#unmark_course_as_done'
+
+          put 'enrolled_courses/:course_id/lessons/:lesson_id/mark_done', to: 'lessons#mark_lesson_as_done'
+          put 'enrolled_courses/:course_id/lessons/:lesson_id/unmark_done', to: 'lessons#unmark_lesson_as_done'
+
+          put 'enrolled_courses/:course_id/lessons/:lesson_id/subjects/:subject_id/mark_done', to: 'subjects#mark_subject_as_done'
+          put 'enrolled_courses/:course_id/lessons/:lesson_id/subjects/:subject_id/unmark_done', to: 'subjects#unmark_subject_as_done'
         end
       end
 
