@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_21_071228) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_08_091810) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,16 +50,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_21_071228) do
     t.index ["course_id"], name: "index_lessons_on_course_id"
   end
 
+  create_table "subject_lessons", force: :cascade do |t|
+    t.bigint "subject_id", null: false
+    t.bigint "lesson_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lesson_id"], name: "index_subject_lessons_on_lesson_id"
+    t.index ["subject_id", "lesson_id"], name: "index_subject_lessons_on_subject_id_and_lesson_id", unique: true
+    t.index ["subject_id"], name: "index_subject_lessons_on_subject_id"
+  end
+
   create_table "subjects", force: :cascade do |t|
     t.string "name"
     t.text "description"
     t.boolean "done", default: false
-    t.bigint "lesson_id", null: false
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_subjects_on_course_id"
-    t.index ["lesson_id"], name: "index_subjects_on_lesson_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -78,6 +86,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_21_071228) do
   add_foreign_key "enroll_courses", "courses"
   add_foreign_key "enroll_courses", "users"
   add_foreign_key "lessons", "courses"
+  add_foreign_key "subject_lessons", "lessons"
+  add_foreign_key "subject_lessons", "subjects"
   add_foreign_key "subjects", "courses"
-  add_foreign_key "subjects", "lessons"
 end
