@@ -1,12 +1,16 @@
 class Api::V1::SubjectsController < ApplicationController
-  before_action :authenticate_user!
-  before_action :find_subject, only: [:mark_subject_as_done, :unmark_subject_as_done]
+  before_action :authenticate_user!, except: [:index]
+  before_action :find_subject
+
+  def index #check later
+    subjects = @subject
+    render json: { subjects: subjects }, status: :ok
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Subject not found' }, status: :not_found
+  end
 
   def subject_details
-    course = current_user.courses.find(params[:course_id])
-    lesson = course.lessons.find(params[:lesson_id])
-    subject = lesson.subjects.find(params[:subject_id])
-    contents = subject.contents
+    contents = @subject.contents
     render json: { contents: contents }, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Subject not found' }, status: :not_found

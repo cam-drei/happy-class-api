@@ -1,18 +1,17 @@
 class Api::V1::LessonsController < ApplicationController
   before_action :authenticate_user!, except: [:index]
+  before_action :find_lesson, except: [:index]
   before_action :set_course
-  before_action :find_lesson, only: [:mark_lesson_as_done, :unmark_lesson_as_done]
+
   
   def index
-    lessons = course.lessons
+    lessons = @course.lessons
     render json: lessons
   end
 
   def lesson_details
-    course = current_user.courses.find(params[:course_id])
-    lesson = course.lessons.find(params[:lesson_id])
-    subjects = lesson.subjects
-    contents = lesson.contents
+    subjects = @lesson.subjects
+    contents = @lesson.contents
     render json: { subjects: subjects, contents: contents }, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Lesson not found' }, status: :not_found
