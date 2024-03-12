@@ -3,10 +3,16 @@ class Api::V1::CoursesController < ApplicationController
   before_action :find_course
 
 
-  def course_details
+  def lessons_for_course
     lessons = @course.lessons
+    render json: { lessons: lessons }, status: :ok
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Course not found' }, status: :not_found
+  end
+
+  def contents_for_course
     contents = @course.contents
-    render json: { lessons: lessons, contents: contents }, status: :ok
+    render json: { contents: contents }, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Course not found' }, status: :not_found
   end

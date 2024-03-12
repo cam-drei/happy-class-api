@@ -9,12 +9,16 @@ Rails.application.routes.draw do
 
       resources :users, only: [] do
         collection do
-          get 'enrolled_courses', to: 'users#enrolled_courses'
-          get 'enrolled_courses/:course_id/lessons', to: 'courses#course_details'
-          get 'enrolled_courses/:course_id/contents', to: 'courses#course_details'
-          get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects', to: 'lessons#lesson_details'
-          get 'enrolled_courses/:course_id/lessons/:lesson_id/contents', to: 'lessons#lesson_details'
-          get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects/:subject_id/contents', to: 'subjects#subject_details'
+          get 'enrolled_courses', to: 'users#enrolled_courses' #ok
+          get 'enrolled_courses/:course_id/lessons', to: 'courses#lessons_for_course' #ok
+          get 'enrolled_courses/:course_id/contents', to: 'courses#contents_for_course' #ok
+
+          get 'enrolled_courses/:course_id/lessons/:lesson_id/contents', to: 'lessons#contents_for_lesson' #ok
+          get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects', to: 'lessons#subjects_for_lesson' #ok
+          get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons', to: 'lessons#subject_lessons_for_lesson' #ok
+          get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lesson_contents', to: 'lessons#subject_lesson_contents_for_lesson' #ok
+
+          # get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects/:subject_id/contents', to: 'subjects#subject_details'
 
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects', to: 'subjects#index' #check later
 

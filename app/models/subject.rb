@@ -2,6 +2,6 @@ class Subject < ApplicationRecord
   validates :name, presence: true
 
   belongs_to :course
-  has_and_belongs_to_many :lessons
-  has_many :contents, as: :resource
+  has_many :subject_lessons
+  has_many :lessons, through: :subject_lessons
 end
