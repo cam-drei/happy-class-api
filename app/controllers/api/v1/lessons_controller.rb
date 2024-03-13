@@ -17,8 +17,8 @@ class Api::V1::LessonsController < ApplicationController
   end
 
   def subject_lessons_for_lesson
-    subject_lessons = @lesson.subject_lessons
-    render json: { subject_lessons: subject_lessons }, status: :ok
+    subject_lessons = @lesson.subject_lessons.includes(:subject)
+    render json: { subject_lessons: subject_lessons.as_json(include: :subject) }, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Lesson not found' }, status: :not_found
   end
