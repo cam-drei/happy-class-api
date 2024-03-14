@@ -9,16 +9,14 @@ Rails.application.routes.draw do
 
       resources :users, only: [] do
         collection do
-          get 'enrolled_courses', to: 'users#enrolled_courses' #ok
-          get 'enrolled_courses/:course_id/lessons', to: 'courses#lessons_for_course' #ok
-          get 'enrolled_courses/:course_id/contents', to: 'courses#contents_for_course' #ok
+          get 'enrolled_courses', to: 'users#enrolled_courses'
+          get 'enrolled_courses/:course_id/lessons', to: 'courses#lessons_for_course'
+          get 'enrolled_courses/:course_id/contents', to: 'courses#contents_for_course'
 
-          get 'enrolled_courses/:course_id/lessons/:lesson_id/contents', to: 'lessons#contents_for_lesson' #ok
-          get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects', to: 'lessons#subjects_for_lesson' #ok
-          get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons', to: 'lessons#subject_lessons_for_lesson' #ok
-          get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lesson_contents', to: 'lessons#subject_lesson_contents_for_lesson' #ok
+          get 'enrolled_courses/:course_id/lessons/:lesson_id/contents', to: 'lessons#contents_for_lesson'
 
-          # get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects/:subject_id/contents', to: 'subjects#subject_details'
+          get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons', to: 'subject_lessons#subject_lessons_for_lesson'
+          get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lesson_contents', to: 'subject_lessons#subject_lesson_contents_for_lesson'
 
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects', to: 'subjects#index' #check later
 
@@ -28,8 +26,8 @@ Rails.application.routes.draw do
           put 'enrolled_courses/:course_id/lessons/:lesson_id/mark_done', to: 'lessons#mark_lesson_as_done'
           put 'enrolled_courses/:course_id/lessons/:lesson_id/unmark_done', to: 'lessons#unmark_lesson_as_done'
 
-          put 'enrolled_courses/:course_id/lessons/:lesson_id/subjects/:subject_id/mark_done', to: 'subjects#mark_subject_as_done'
-          put 'enrolled_courses/:course_id/lessons/:lesson_id/subjects/:subject_id/unmark_done', to: 'subjects#unmark_subject_as_done'
+          put 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons/:subject_lesson_id/mark_done', to: 'subject_lessons#mark_subject_lesson_as_done'
+          put 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons/:subject_lesson_id/unmark_done', to: 'subject_lessons#unmark_subject_lesson_as_done'
         end
       end
 

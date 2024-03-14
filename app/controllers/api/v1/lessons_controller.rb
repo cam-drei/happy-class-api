@@ -1,34 +1,12 @@
 class Api::V1::LessonsController < ApplicationController
   before_action :authenticate_user!, except: [:index]
   before_action :find_lesson, except: [:index]
-  before_action :set_course
+  before_action :set_course, only: [:index]
 
   
   def index
     lessons = @course.lessons
     render json: lessons
-  end
-
-  def subjects_for_lesson
-    subjects = @lesson.subjects
-    render json: { subjects: subjects }, status: :ok
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Lesson not found' }, status: :not_found
-  end
-
-  def subject_lessons_for_lesson
-    subject_lessons = @lesson.subject_lessons.includes(:subject)
-    render json: { subject_lessons: subject_lessons.as_json(include: :subject) }, status: :ok
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Lesson not found' }, status: :not_found
-  end
-
-  def subject_lesson_contents_for_lesson
-    subject_lessons = @lesson.subject_lessons
-    subject_lesson_contents = subject_lessons.map { |subject_lesson| subject_lesson.contents }.flatten
-    render json: { subject_lesson_contents: subject_lesson_contents }, status: :ok
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Lesson not found' }, status: :not_found
   end
 
   def contents_for_lesson
