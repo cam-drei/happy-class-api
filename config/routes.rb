@@ -10,13 +10,14 @@ Rails.application.routes.draw do
       resources :users, only: [] do
         collection do
           get 'enrolled_courses', to: 'users#enrolled_courses'
+
           get 'enrolled_courses/:course_id/lessons', to: 'courses#lessons_for_course'
           get 'enrolled_courses/:course_id/contents', to: 'courses#contents_for_course'
 
           get 'enrolled_courses/:course_id/lessons/:lesson_id/contents', to: 'lessons#contents_for_lesson'
 
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons', to: 'subject_lessons#subject_lessons_for_lesson'
-          get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lesson_contents', to: 'subject_lessons#subject_lesson_contents_for_lesson'
+          get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons/:subject_lesson_id/subject_lesson_contents', to: 'subject_lessons#subject_lesson_contents'
 
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects', to: 'subjects#index' #check later
 

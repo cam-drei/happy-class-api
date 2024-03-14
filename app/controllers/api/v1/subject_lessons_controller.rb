@@ -1,7 +1,7 @@
 class Api::V1::SubjectLessonsController < ApplicationController
   before_action :authenticate_user!
-  before_action :find_subject_lesson, only: [:mark_subject_lesson_as_done, :unmark_subject_lesson_as_done]
-  before_action :find_lesson, only: [:subject_lessons_for_lesson, :subject_lesson_contents_for_lesson]
+  before_action :find_subject_lesson, only: [:mark_subject_lesson_as_done, :unmark_subject_lesson_as_done, :subject_lesson_contents]
+  before_action :find_lesson, only: [:subject_lessons_for_lesson]
 
   def subject_lessons_for_lesson
     subject_lessons = @lesson.subject_lessons.as_json(include: :subject)
@@ -10,9 +10,8 @@ class Api::V1::SubjectLessonsController < ApplicationController
     render json: { error: 'Lessonsss not found' }, status: :not_found
   end
 
-  def subject_lesson_contents_for_lesson
-    subject_lessons = @lesson.subject_lessons
-    subject_lesson_contents = subject_lessons.map { |subject_lesson| subject_lesson.contents }.flatten
+  def subject_lesson_contents
+    subject_lesson_contents = @subject_lesson.contents
     render json: { subject_lesson_contents: subject_lesson_contents }, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Lesson not found' }, status: :not_found
@@ -49,5 +48,4 @@ class Api::V1::SubjectLessonsController < ApplicationController
     course = current_user.courses.find(params[:course_id])
     @lesson = course.lessons.find(params[:lesson_id])
   end
-
 end
