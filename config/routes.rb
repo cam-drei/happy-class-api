@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
           get 'enrolled_courses/:course_id/lessons', to: 'courses#lessons_for_course'
           get 'enrolled_courses/:course_id/contents', to: 'courses#contents_for_course'
+          get 'enrolled_courses/:course_id/subjects', to: 'courses#subjects_for_course'
 
           get 'enrolled_courses/:course_id/lessons/:lesson_id/contents', to: 'lessons#contents_for_lesson'
 
