@@ -19,8 +19,6 @@ Rails.application.routes.draw do
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons', to: 'subject_lessons#subject_lessons_for_lesson'
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons/:subject_lesson_id/subject_lesson_contents', to: 'subject_lessons#subject_lesson_contents'
 
-          get 'enrolled_courses/:course_id/lessons/:lesson_id/subjects', to: 'subjects#index' #check later
-
           put 'enrolled_courses/:course_id/mark_done', to: 'courses#mark_course_as_done'
           put 'enrolled_courses/:course_id/unmark_done', to: 'courses#unmark_course_as_done'
 

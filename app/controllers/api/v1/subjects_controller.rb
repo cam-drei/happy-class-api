@@ -1,20 +1,6 @@
 class Api::V1::SubjectsController < ApplicationController
-  before_action :authenticate_user!, except: [:index]
+  before_action :authenticate_user!
   before_action :find_subject
-
-  def index #check later
-    subjects = @subject
-    render json: { subjects: subjects }, status: :ok
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Subject not found' }, status: :not_found
-  end
-
-  def subject_details
-    contents = @subject.contents
-    render json: { contents: contents }, status: :ok
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Subject not found' }, status: :not_found
-  end
 
   def mark_subject_as_done
     if @subject.update(done: true)
