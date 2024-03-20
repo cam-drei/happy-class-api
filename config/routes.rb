@@ -15,6 +15,9 @@ Rails.application.routes.draw do
           get 'enrolled_courses/:course_id/contents', to: 'courses#contents_for_course'
           get 'enrolled_courses/:course_id/subjects', to: 'courses#subjects_for_course'
 
+          put 'enrolled_courses/:course_id/subjects/:subject_id/mark_selected', to: 'subjects#mark_subject_as_selected'
+          put 'enrolled_courses/:course_id/subjects/:subject_id/unmark_selected', to: 'subjects#unmark_subject_as_selected'
+
           get 'enrolled_courses/:course_id/lessons/:lesson_id/contents', to: 'lessons#contents_for_lesson'
 
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons', to: 'subject_lessons#subject_lessons_for_lesson'
