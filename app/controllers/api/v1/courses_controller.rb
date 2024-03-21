@@ -24,6 +24,13 @@ class Api::V1::CoursesController < ApplicationController
     render json: { error: 'Course not found' }, status: :not_found
   end
 
+  def selected_subjects_for_course
+    selected_subjects = @course.subjects.where(selected: true)
+    render json: { selected_subjects: selected_subjects }, status: :ok
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Course not found' }, status: :not_found
+  end
+
   def mark_course_as_done
     if @course.update(done: true)
       render json: { message: 'Course marked as done successfully' }, status: :ok
