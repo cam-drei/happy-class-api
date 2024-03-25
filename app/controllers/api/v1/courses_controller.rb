@@ -31,6 +31,23 @@ class Api::V1::CoursesController < ApplicationController
     render json: { error: 'Course not found' }, status: :not_found
   end
 
+  def course_status
+    status = if @course.lessons.present?
+      if @course.lessons.all?(&:done)
+        'Done'
+      elsif @course.lessons.any?(&:done)
+        'In Progress'
+      else
+        'Todo'
+      end
+    else
+      'No Lessons'
+    end
+  render json: { status: status }, status: :ok
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Course not found' }, status: :not_found
+  end
+
   def mark_course_as_done
     if @course.update(done: true)
       render json: { message: 'Course marked as done successfully' }, status: :ok
