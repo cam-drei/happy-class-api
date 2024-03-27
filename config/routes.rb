@@ -36,7 +36,9 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :courses, only: [] do #use for display lessons when user not logged yet
+      # resources :courses, only: [:index] # Add an index route for courses
+
+      resources :courses, only: [:index] do #use for display lessons when user not logged yet
         resources :lessons, only: [:index]
       end
     end
