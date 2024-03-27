@@ -1,5 +1,5 @@
 class Api::V1::CoursesController < ApplicationController
-  before_action :authenticate_user!, except: [:index]
+  before_action :authenticate_user!
   before_action :find_course, except: [:index]
 
   def index
@@ -7,6 +7,22 @@ class Api::V1::CoursesController < ApplicationController
     render json: { courses: courses }, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Course not found' }, status: :not_found
+  end
+
+  def mark_course_as_selected
+    if @course.update(selected: true)
+      render json: { message: 'Course marked as selected successfully' }, status: :ok
+    else
+      render json: { error: 'Failed to mark course as selected' }, status: :unprocessable_entity
+    end
+  end
+
+  def unmark_course_as_selected
+    if @course.update(selected: false)
+      render json: { message: 'Course marked as not selected successfully' }, status: :ok
+    else
+      render json: { error: 'Failed to mark course as not selected' }, status: :unprocessable_entity
+    end
   end
 
   def lessons_for_course

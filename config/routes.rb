@@ -9,6 +9,11 @@ Rails.application.routes.draw do
 
       resources :users, only: [] do
         collection do
+          get '/courses', to: 'courses#index'
+
+          put '/courses/:course_id/mark_selected', to: 'courses#mark_course_as_selected'
+          put '/courses/:course_id/unmark_selected', to: 'courses#unmark_course_as_selected'
+
           get 'enrolled_courses', to: 'users#enrolled_courses'
 
           get 'enrolled_courses/:course_id/lessons', to: 'courses#lessons_for_course'
@@ -35,8 +40,6 @@ Rails.application.routes.draw do
           put 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons/:subject_lesson_id/unmark_done', to: 'subject_lessons#unmark_subject_lesson_as_done'
         end
       end
-
-      # resources :courses, only: [:index] # Add an index route for courses
 
       resources :courses, only: [:index] do #use for display lessons when user not logged yet
         resources :lessons, only: [:index]
