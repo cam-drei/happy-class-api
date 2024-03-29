@@ -10,7 +10,7 @@ Rails.application.routes.draw do
       resources :users, only: [] do
         collection do
           get 'courses', to: 'courses#index'
-          get 'courses/selected_course', to: 'courses#selected_course'
+          get 'selected_courses', to: 'courses#selected_courses'
 
           put 'courses/:course_id/mark_selected', to: 'courses#mark_course_as_selected'
           put 'courses/:course_id/unmark_selected', to: 'courses#unmark_course_as_selected'
