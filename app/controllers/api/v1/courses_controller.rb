@@ -1,10 +1,17 @@
 class Api::V1::CoursesController < ApplicationController
   before_action :authenticate_user!
-  before_action :find_course, except: [:index]
+  before_action :find_course, except: [:index, :selected_course]
 
   def index
     courses = Course.all
     render json: { courses: courses }, status: :ok
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Course not found' }, status: :not_found
+  end
+
+  def selected_course
+    selected_courses = Course.all.where(selected: true)
+    render json: { selected_courses: selected_courses }, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Course not found' }, status: :not_found
   end
