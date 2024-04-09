@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       devise_scope :user do
         post '/login', to: 'sessions#create'
+        delete '/logout', to: 'sessions#destroy'
       end
 
       resources :users, only: [] do

@@ -2,22 +2,20 @@ class Api::V1::SessionsController < Devise::SessionsController
   respond_to :json
 
   def create
-    resource = warden.authenticate(auth_options)
-
-    if resource
-      sign_in(:user, resource)
-      render json: { 
-        token: resource.authentication_token,
-        user: resource.as_json(only: [:id, :email])
+    user = User.find_by(email: params[:email])
+    if user && user.valid_password?(params[:password])
+      sign_in(user)
+      render json: {
+        token: user.authentication_token,
+        user: user.as_json(only: [:id, :email])
       }
     else
-      render json: { error: 'Invalid credentials' }, status: :unauthorized
+      render json: { message: 'Invalid email or password' }, status: :unauthorized
     end
   end
 
-  private
-
-  def auth_options
-    { scope: :user, recall: "#{controller_path}#new" }
+  def destroy
+    sign_out(current_user)
+    render json: { message: 'Logged out successfully' }
   end
 end

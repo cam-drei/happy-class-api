@@ -9,10 +9,6 @@ class User < ApplicationRecord
   has_many :enroll_courses
   has_many :courses, through: :enroll_courses
 
-  def enrolled_course_names
-    courses.pluck(:name)
-  end
-
   private
 
   def ensure_authentication_token
