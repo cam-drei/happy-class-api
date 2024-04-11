@@ -8,6 +8,8 @@ Rails.application.routes.draw do
         delete '/logout', to: 'sessions#destroy'
       end
 
+      post '/signup', to: 'registrations#create'
+      
       resources :users, only: [] do
         collection do
           get 'courses', to: 'courses#index'

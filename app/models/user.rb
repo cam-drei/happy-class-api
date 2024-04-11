@@ -9,6 +9,10 @@ class User < ApplicationRecord
   has_many :enroll_courses
   has_many :courses, through: :enroll_courses
 
+  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :password, presence: true, length: { minimum: 4 }
+  validates :password_confirmation, presence: true
+
   private
 
   def ensure_authentication_token
