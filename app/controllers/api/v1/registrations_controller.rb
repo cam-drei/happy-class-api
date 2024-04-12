@@ -5,6 +5,7 @@ class Api::V1::RegistrationsController < ApplicationController
     user = User.new(user_params)
 
     if user.save
+      sign_in(user)
       render json: { user: user }, status: :created
     else
       render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
