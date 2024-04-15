@@ -9,7 +9,7 @@ Rails.application.routes.draw do
       end
 
       post '/signup', to: 'registrations#create'
-      
+
       resources :users, only: [] do
         collection do
           get 'courses', to: 'courses#index'
@@ -31,9 +31,6 @@ Rails.application.routes.draw do
 
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons', to: 'subject_lessons#subject_lessons_for_lesson'
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons/:subject_lesson_id/subject_lesson_contents', to: 'subject_lessons#subject_lesson_contents'
-
-          put 'enrolled_courses/:course_id/mark_done', to: 'courses#mark_course_as_done'
-          put 'enrolled_courses/:course_id/unmark_done', to: 'courses#unmark_course_as_done'
 
           put 'enrolled_courses/:course_id/lessons/:lesson_id/mark_done', to: 'lessons#mark_lesson_as_done'
           put 'enrolled_courses/:course_id/lessons/:lesson_id/unmark_done', to: 'lessons#unmark_lesson_as_done'
