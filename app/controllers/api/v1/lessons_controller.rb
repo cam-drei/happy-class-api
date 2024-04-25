@@ -16,22 +16,6 @@ class Api::V1::LessonsController < ApplicationController
     render json: { error: 'Lesson not found' }, status: :not_found
   end
 
-  def mark_lesson_as_done
-    if @lesson.update(done: true)
-      render json: { message: 'Lesson marked as done successfully' }, status: :ok
-    else
-      render json: { error: 'Failed to mark lesson as done' }, status: :unprocessable_entity
-    end
-  end
-
-  def unmark_lesson_as_done
-    if @lesson.update(done: false)
-      render json: { message: 'Lesson marked as not done successfully' }, status: :ok
-    else
-      render json: { error: 'Failed to mark lesson as not done' }, status: :unprocessable_entity
-    end
-  end
-
   private
 
   def find_lesson

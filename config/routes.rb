@@ -18,6 +18,10 @@ Rails.application.routes.draw do
           put 'courses/:course_id/enroll_course', to: 'users#enroll_course'
           put 'courses/:course_id/unenroll_course', to: 'users#unenroll_course'
 
+          get 'enrolled_courses/:course_id/user_lessons', to: 'users#user_lessons'
+          put 'enrolled_courses/:course_id/user_lessons/:user_lesson_id/mark_done', to: 'users#mark_user_lesson_as_done'
+          put 'enrolled_courses/:course_id/user_lessons/:user_lesson_id/unmark_done', to: 'users#unmark_user_lesson_as_done'
+
           get 'enrolled_courses/:course_id/lessons', to: 'courses#lessons_for_course'
           get 'enrolled_courses/:course_id/contents', to: 'courses#contents_for_course'
           get 'enrolled_courses/:course_id/subjects', to: 'courses#subjects_for_course'
@@ -31,9 +35,6 @@ Rails.application.routes.draw do
 
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons', to: 'subject_lessons#subject_lessons_for_lesson'
           get 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons/:subject_lesson_id/subject_lesson_contents', to: 'subject_lessons#subject_lesson_contents'
-
-          put 'enrolled_courses/:course_id/lessons/:lesson_id/mark_done', to: 'lessons#mark_lesson_as_done'
-          put 'enrolled_courses/:course_id/lessons/:lesson_id/unmark_done', to: 'lessons#unmark_lesson_as_done'
 
           put 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons/:subject_lesson_id/mark_done', to: 'subject_lessons#mark_subject_lesson_as_done'
           put 'enrolled_courses/:course_id/lessons/:lesson_id/subject_lessons/:subject_lesson_id/unmark_done', to: 'subject_lessons#unmark_subject_lesson_as_done'

@@ -13,6 +13,8 @@ class User < ApplicationRecord
 
   has_many :enroll_courses
   has_many :courses, through: :enroll_courses
+  has_many :user_lessons
+  has_many :lessons, through: :user_lessons
 
   private
 

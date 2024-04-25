@@ -39,9 +39,13 @@ class Api::V1::CoursesController < ApplicationController
 
   def course_status
     status = if @course.lessons.present?
-      if @course.lessons.all?(&:done)
+      lesson_ids = @course.lessons.pluck(:id)
+      total_lessons_count = lesson_ids.count
+      done_lessons_count = UserLesson.where(lesson_id: lesson_ids, user_id: current_user.id, done: true).count
+      
+      if done_lessons_count == total_lessons_count
         'Done'
-      elsif @course.lessons.any?(&:done)
+      elsif done_lessons_count > 0
         'In Progress'
       else
         'Todo'
@@ -49,7 +53,7 @@ class Api::V1::CoursesController < ApplicationController
     else
       'No Lessons'
     end
-  render json: { status: status }, status: :ok
+    render json: { status: status }, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Course not found' }, status: :not_found
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_15_025304) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_24_032217) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -45,7 +45,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_15_025304) do
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "done", default: false
     t.index ["course_id"], name: "index_lessons_on_course_id"
   end
 
@@ -70,6 +69,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_15_025304) do
     t.index ["course_id"], name: "index_subjects_on_course_id"
   end
 
+  create_table "user_lessons", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "lesson_id", null: false
+    t.boolean "done", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lesson_id"], name: "index_user_lessons_on_lesson_id"
+    t.index ["user_id", "lesson_id"], name: "index_user_lessons_on_user_id_and_lesson_id", unique: true
+    t.index ["user_id"], name: "index_user_lessons_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -89,4 +99,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_15_025304) do
   add_foreign_key "subject_lessons", "lessons"
   add_foreign_key "subject_lessons", "subjects"
   add_foreign_key "subjects", "courses"
+  add_foreign_key "user_lessons", "lessons"
+  add_foreign_key "user_lessons", "users"
 end
