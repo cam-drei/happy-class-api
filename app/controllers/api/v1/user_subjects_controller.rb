@@ -1,5 +1,7 @@
 class Api::V1::UserSubjectsController < ApplicationController
   before_action :authenticate_user!
+  before_action :find_course_and_subject
+  before_action :find_user_subject
 
   def mark_user_subject_as_selected
     @user_subject.update(selected: true)
