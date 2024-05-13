@@ -53,6 +53,16 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  def user_subjects_for_course
+    course_id = params[:course_id]
+    if course_id.present?
+      user_subjects = current_user.user_subjects_for_course(course_id)
+      render json: { user_subjects: user_subjects }, status: :ok
+    else
+      render json: { error: 'Course ID is missing' }, status: :unprocessable_entity
+    end
+  end
+
   def mark_user_lesson_as_done
     user_lesson = current_user.user_lessons.find_by(id: params[:user_lesson_id])
     if user_lesson

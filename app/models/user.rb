@@ -15,6 +15,15 @@ class User < ApplicationRecord
   has_many :courses, through: :enroll_courses
   has_many :user_lessons
   has_many :lessons, through: :user_lessons
+  has_many :user_subjects
+  has_many :subjects, through: :user_subjects
+
+  def user_subjects_for_course(course_id)
+    enrolled_course = enroll_courses.find_by(course_id: course_id)
+    return [] unless enrolled_course
+
+    enrolled_course.course.subjects
+  end
 
   private
 
