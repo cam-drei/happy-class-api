@@ -30,13 +30,6 @@ class Api::V1::CoursesController < ApplicationController
     render json: { error: 'Course not found' }, status: :not_found
   end
 
-  def selected_subjects_for_course
-    selected_subjects = @course.subjects.where(selected: true)
-    render json: { selected_subjects: selected_subjects }, status: :ok
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Course not found' }, status: :not_found
-  end
-
   def course_status
     status = if @course.lessons.present?
       lesson_ids = @course.lessons.pluck(:id)

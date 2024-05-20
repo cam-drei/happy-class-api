@@ -1,7 +1,7 @@
 class Api::V1::UserSubjectsController < ApplicationController
   before_action :authenticate_user!
-  before_action :find_course_and_subject, except: [:user_subjects_for_course]
-  before_action :find_user_subject, except: [:user_subjects_for_course]
+  before_action :find_course_and_subject, only: [:mark_user_subject_as_selected, :unmark_user_subject_as_selected]
+  before_action :find_user_subject, only: [:mark_user_subject_as_selected, :unmark_user_subject_as_selected]
 
   def mark_user_subject_as_selected
     @user_subject.update(selected: true)
@@ -18,6 +18,16 @@ class Api::V1::UserSubjectsController < ApplicationController
     if course_id.present?
       user_subjects = current_user.user_subjects_for_course(course_id)
       render json: { user_subjects: user_subjects }, status: :ok
+    else
+      render json: { error: 'Course ID is missing' }, status: :unprocessable_entity
+    end
+  end
+
+  def selected_user_subjects_for_course
+    course_id = params[:course_id]
+    if course_id.present?
+      selected_user_subjects = current_user.selected_user_subjects_for_course(course_id)
+      render json: { selected_user_subjects: selected_user_subjects }, status: :ok
     else
       render json: { error: 'Course ID is missing' }, status: :unprocessable_entity
     end

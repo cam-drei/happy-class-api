@@ -22,6 +22,10 @@ class User < ApplicationRecord
     user_subjects.joins(:subject).where(subjects: { course_id: course_id })
   end
 
+  def selected_user_subjects_for_course(course_id)
+    user_subjects.joins(:subject).where(subjects: { course_id: course_id }, selected: true)
+  end
+
   private
 
   def ensure_authentication_token
