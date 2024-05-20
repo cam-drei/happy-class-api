@@ -19,10 +19,7 @@ class User < ApplicationRecord
   has_many :subjects, through: :user_subjects
 
   def user_subjects_for_course(course_id)
-    enrolled_course = enroll_courses.find_by(course_id: course_id)
-    return [] unless enrolled_course
-
-    enrolled_course.course.subjects
+    user_subjects.joins(:subject).where(subjects: { course_id: course_id })
   end
 
   private

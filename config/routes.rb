@@ -22,7 +22,7 @@ Rails.application.routes.draw do
           put 'enrolled_courses/:course_id/user_lessons/:user_lesson_id/mark_done', to: 'users#mark_user_lesson_as_done'
           put 'enrolled_courses/:course_id/user_lessons/:user_lesson_id/unmark_done', to: 'users#unmark_user_lesson_as_done'
 
-          get 'enrolled_courses/:course_id/user_subjects', to: 'users#user_subjects_for_course'
+          get 'enrolled_courses/:course_id/user_subjects', to: 'user_subjects#user_subjects_for_course'
           put 'enrolled_courses/:course_id/user_subjects/:user_subject_id/mark_selected', to: 'user_subjects#mark_user_subject_as_selected'
           put 'enrolled_courses/:course_id/user_subjects/:user_subject_id/unmark_selected', to: 'user_subjects#unmark_user_subject_as_selected'
 
