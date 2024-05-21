@@ -37,14 +37,14 @@ class Api::V1::UserSubjectsController < ApplicationController
 
   def find_course_and_subject
     @course = Course.find_by(id: params[:course_id])
-    @subject = @course&.subjects&.find_by(id: params[:user_subject_id])
+    @subject = @course&.subjects&.find_by(id: params[:subject_id])
     unless @course && @subject
       render json: { error: 'Course or subject not found' }, status: :not_found
     end
   end
 
   def find_user_subject
-    @user_subject = current_user.user_subjects.find_by(id: params[:user_subject_id])
+    @user_subject = current_user.user_subjects.find_by(subject_id: params[:subject_id])
     unless @user_subject
       render json: { error: 'User subject not found' }, status: :not_found
     end
