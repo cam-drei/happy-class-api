@@ -17,6 +17,8 @@ class User < ApplicationRecord
   has_many :lessons, through: :user_lessons
   has_many :user_subjects
   has_many :subjects, through: :user_subjects
+  has_many :user_subject_lessons
+  has_many :subject_lessons, through: :user_subject_lessons
 
   def user_subjects_for_course(course_id)
     user_subjects.joins(:subject).where(subjects: { course_id: course_id })
