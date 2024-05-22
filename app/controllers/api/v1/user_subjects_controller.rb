@@ -1,7 +1,7 @@
 class Api::V1::UserSubjectsController < ApplicationController
   before_action :authenticate_user!
   before_action :find_course_and_subject, only: [:mark_user_subject_as_selected, :unmark_user_subject_as_selected]
-  before_action :find_user_subject, only: [:mark_user_subject_as_selected, :unmark_user_subject_as_selected]
+  before_action :find_or_create_user_subject, only: [:mark_user_subject_as_selected, :unmark_user_subject_as_selected]
 
   def mark_user_subject_as_selected
     @user_subject.update(selected: true)
@@ -43,10 +43,11 @@ class Api::V1::UserSubjectsController < ApplicationController
     end
   end
 
-  def find_user_subject
-    @user_subject = current_user.user_subjects.find_by(subject_id: params[:subject_id])
-    unless @user_subject
-      render json: { error: 'User subject not found' }, status: :not_found
+  def find_or_create_user_subject
+    @user_subject = current_user.user_subjects.find_or_create_by(subject_id: params[:subject_id])
+
+    if @user_subject.nil?
+      render json: { error: 'User subject not found and could not be created', user_email: current_user.email, subject_id: params[:subject_id] }, status: :not_found
     end
   end
 end
