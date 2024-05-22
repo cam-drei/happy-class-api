@@ -15,19 +15,21 @@ class Api::V1::UsersController < ApplicationController
       else
         current_user.courses << course
         course.lessons.each do |lesson|
-          current_user.user_lessons.create(lesson: lesson)
+          unless current_user.user_lessons.exists?(lesson_id: lesson.id)
+            current_user.user_lessons.create(lesson: lesson)
+          end
         end
         render json: { message: 'Successfully enrolled in the course' }, status: :created
       end
     else
       render json: { error: 'Course not found' }, status: :not_found
     end
-  end
+  end  
 
   def unenroll_course
     course = Course.find_by(id: params[:course_id])
     if course
-      if current_user.courses.exists?(course.id)
+      if current_user.courses.exists?(id: course.id)
         current_user.courses.delete(course)
         render json: { message: 'Successfully unenrolled from the course' }, status: :ok
       else
