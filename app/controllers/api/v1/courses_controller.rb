@@ -10,10 +10,28 @@ class Api::V1::CoursesController < ApplicationController
   end
 
   def lessons_for_course
-    lessons = @course.lessons
-    render json: { lessons: lessons }, status: :ok
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Course not found' }, status: :not_found
+    lessons = @course.lessons.includes(:contents, subject_lessons: [:subject, :user_subject_lessons])
+  
+    lessons_details = lessons.map do |lesson|
+      {
+        id: lesson.id,
+        name: lesson.name,
+        done: lesson.subject_lessons.any? { |sl| current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true) },
+        contents: lesson.contents.as_json(only: [:id, :video_link, :document_link]),
+        subject_lessons: lesson.subject_lessons.map do |subject_lesson|
+          user_subject_lesson = current_user.user_subject_lessons.find_by(subject_lesson: subject_lesson)
+  
+          {
+            id: subject_lesson.id,
+            done: user_subject_lesson&.done || false,
+            subject_name: subject_lesson.subject.name,
+            contents: subject_lesson.contents.as_json(only: [:id, :video_link, :document_link])
+          }
+        end
+      }
+    end
+  
+    render json: lessons_details, status: :ok
   end
 
   def contents_for_course

@@ -1,38 +1,30 @@
 class Api::V1::SubjectLessonsController < ApplicationController
   before_action :authenticate_user!
-  before_action :find_subject_lesson, only: [:mark_subject_lesson_as_done, :unmark_subject_lesson_as_done, :subject_lesson_contents]
-  before_action :find_lesson, only: [:subject_lessons_for_lesson]
+  before_action :find_lesson, only: [:subject_lessons_with_contents]
+  before_action :find_course_and_lesson, only: [:combined_data]
 
-  def subject_lessons_for_lesson
-    subject_lessons = @lesson.subject_lessons.as_json(include: :subject)
-    render json: { subject_lessons: subject_lessons.as_json(include: :subject) }, status: :ok
+  def subject_lessons_with_contents
+    subject_lessons = @lesson.subject_lessons.includes(:contents)
+    render json: { subject_lessons: subject_lessons.map { |sl| sl.as_json.merge(contents: sl.contents) } }, status: :ok
   rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Lessonsss not found' }, status: :not_found
+    render json: { error: 'Lesson or subject lesson not found' }, status: :not_found
   end
 
-  def subject_lesson_contents
-    subject_lesson_contents = @subject_lesson.contents
-    render json: { subject_lesson_contents: subject_lesson_contents }, status: :ok
+  def combined_data
+    subject_lessons = @lesson.subject_lessons.includes(:contents)
+    user_subject_lessons = current_user.user_subject_lessons.where(subject_lesson_id: subject_lessons.map(&:id))
+
+    response = {
+      lesson: @lesson,
+      subject_lessons: subject_lessons.as_json(include: :contents),
+      user_subject_lessons: user_subject_lessons,
+      lesson_contents: @lesson.contents
+    }
+
+    render json: response, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Lesson not found' }, status: :not_found
   end
-
-  def mark_subject_lesson_as_done
-    if @subject_lesson.update(done: true)
-      render json: { message: 'Subject marked for lesson as done successfully' }, status: :ok
-    else
-      render json: { error: 'Failed to mark subject for lesson as done' }, status: :unprocessable_entity
-    end
-  end
-
-  def unmark_subject_lesson_as_done
-    if @subject_lesson.update(done: false)
-      render json: { message: 'Subject for lesson marked as not done successfully' }, status: :ok
-    else
-      render json: { error: 'Failed to mark subject for lesson as not done' }, status: :unprocessable_entity
-    end
-  end
-
 
   private
 
@@ -47,5 +39,12 @@ class Api::V1::SubjectLessonsController < ApplicationController
   def find_lesson
     course = current_user.courses.find(params[:course_id])
     @lesson = course.lessons.find(params[:lesson_id])
+  end
+
+  def find_course_and_lesson
+    course = current_user.courses.find(params[:course_id])
+    @lesson = course.lessons.find(params[:lesson_id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Course or Lesson not found' }, status: :not_found
   end
 end

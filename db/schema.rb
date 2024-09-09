@@ -54,7 +54,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_22_034028) do
     t.bigint "lesson_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "done", default: false
+    t.boolean "done", default: false #remove later
     t.index ["lesson_id"], name: "index_subject_lessons_on_lesson_id"
     t.index ["subject_id", "lesson_id"], name: "index_subject_lessons_on_subject_id_and_lesson_id", unique: true
     t.index ["subject_id"], name: "index_subject_lessons_on_subject_id"
