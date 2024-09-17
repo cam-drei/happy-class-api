@@ -62,27 +62,40 @@ class Api::V1::CoursesController < ApplicationController
   end
 
   def course_status
-    status = if @course.lessons.present?
-      lesson_ids = @course.lessons.pluck(:id)
-      total_lessons_count = lesson_ids.count
+    course = Course.find_by(id: params[:course_id])
+    if course
+      lesson_ids = course.lessons.pluck(:id)
       done_lessons_count = UserLesson.where(lesson_id: lesson_ids, user_id: current_user.id, done: true).count
-      
-      if done_lessons_count == total_lessons_count
-        'Done'
-      elsif done_lessons_count > 0
-        'In Progress'
-      else
-        'Todo'
+  
+      lesson_statuses = course.lessons.includes(:subject_lessons).each do |lesson|
+        lesson_done = lesson.subject_lessons.all? { |sl| current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true) }
+        UserLesson.find_or_initialize_by(lesson_id: lesson.id, user_id: current_user.id).update(done: lesson_done)
       end
+  
+      total_lessons_count = lesson_ids.size
+      status = if done_lessons_count == total_lessons_count
+                 'Done'
+               elsif done_lessons_count > 0
+                 'In Progress'
+               else
+                 'Todo'
+               end
+  
+      render json: { status: status }, status: :ok
     else
-      'No Lessons'
+      render json: { error: 'Course not found' }, status: :not_found
     end
-    render json: { status: status }, status: :ok
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Course not found' }, status: :not_found
-  end
+  rescue StandardError => e
+    Rails.logger.error "Error: #{e.message}"
+    render json: { error: 'An error occurred' }, status: :internal_server_error
+  end    
 
   private
+
+  def done_lessons_count(lessons)
+    lesson_ids = lessons.pluck(:id)
+    UserLesson.where(lesson_id: lesson_ids, user_id: current_user.id, done: true).count
+  end
 
   def find_course
     @course = current_user.courses.find(params[:course_id])

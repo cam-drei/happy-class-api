@@ -44,16 +44,28 @@ class Api::V1::UsersController < ApplicationController
     if params[:course_id]
       course = Course.find_by(id: params[:course_id])
       if course
-        user_lessons = current_user.user_lessons.where(lesson_id: course.lessons.pluck(:id))
+        lesson_ids = course.lessons.pluck(:id)
+        user_lessons = current_user.user_lessons.where(lesson_id: lesson_ids)
+  
+        user_lessons.each do |user_lesson|
+          lesson = Lesson.find_by(id: user_lesson.lesson_id)
+          next unless lesson
+  
+          lesson_done = lesson.subject_lessons.all? { |sl| current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true) }
+          user_lesson.update(done: lesson_done)
+        end
+  
         render json: { user_lessons: user_lessons }, status: :ok
       else
         render json: { error: 'Course not found' }, status: :not_found
       end
     else
-      user_lessons = current_user.user_lessons
-      render json: { user_lessons: user_lessons }, status: :ok
+      render json: { user_lessons: current_user.user_lessons }, status: :ok
     end
-  end
+  rescue StandardError => e
+    Rails.logger.error "Error: #{e.message}"
+    render json: { error: 'An error occurred' }, status: :internal_server_error
+  end  
 
   def mark_user_lesson_as_done
     user_lesson = current_user.user_lessons.find_by(id: params[:user_lesson_id])
