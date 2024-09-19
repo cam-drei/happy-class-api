@@ -73,13 +73,15 @@ class Api::V1::CoursesController < ApplicationController
       end
   
       total_lessons_count = lesson_ids.size
-      status = if done_lessons_count == total_lessons_count
-                 'Done'
-               elsif done_lessons_count > 0
-                 'In Progress'
-               else
-                 'Todo'
-               end
+      status = if total_lessons_count == 0
+        'No Lesson'
+      elsif done_lessons_count == total_lessons_count
+        'Done'
+      elsif done_lessons_count > 0
+        'In Progress'
+      else
+        'Todo'
+      end
   
       render json: { status: status }, status: :ok
     else
