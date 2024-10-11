@@ -11,16 +11,25 @@ class Api::V1::CoursesController < ApplicationController
 
   def lessons_for_course
     course_id = params[:course_id]
-  
+
     selected_user_subjects = current_user.selected_user_subjects_for_course(course_id)
+
+    if selected_user_subjects.empty?
+      @course.subjects.each do |subject|
+        current_user.user_subjects.find_or_create_by(subject: subject).update(selected: true)
+      end
+
+      selected_user_subjects = current_user.selected_user_subjects_for_course(course_id)
+    end
+
     selected_subject_ids = selected_user_subjects.pluck(:subject_id)
-  
+
     lessons = @course.lessons.includes(:contents, subject_lessons: [:subject, :user_subject_lessons])
-    
+
     lessons = lessons.select do |lesson|
       lesson.subject_lessons.any? { |subject_lesson| selected_subject_ids.include?(subject_lesson.subject_id) }
     end
-    
+
     lessons_details = lessons.map do |lesson|
       {
         id: lesson.id,
@@ -31,7 +40,7 @@ class Api::V1::CoursesController < ApplicationController
           selected_subject_ids.include?(subject_lesson.subject_id)
         end.map do |subject_lesson|
           user_subject_lesson = current_user.user_subject_lessons.find_by(subject_lesson: subject_lesson)
-      
+
           {
             id: subject_lesson.id,
             done: user_subject_lesson&.done || false,
@@ -41,7 +50,7 @@ class Api::V1::CoursesController < ApplicationController
         end
       }
     end
-  
+
     render json: lessons_details, status: :ok
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Course not found' }, status: :not_found
@@ -64,39 +73,44 @@ class Api::V1::CoursesController < ApplicationController
   def course_status
     course = Course.find_by(id: params[:course_id])
     if course
-      lesson_ids = course.lessons.pluck(:id)
-      done_lessons_count = 0
-  
-      lesson_statuses = course.lessons.includes(:subject_lessons).each do |lesson|
-        selected_user_subjects = current_user.user_subjects.where(subject_id: lesson.subject_lessons.pluck(:subject_id))
-  
-        if selected_user_subjects.exists?
-          lesson_done = lesson.subject_lessons.all? do |sl|
-            current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true)
-          end
-  
-          if lesson_done
-            done_lessons_count += 1
-          end
-  
-          UserLesson.find_or_initialize_by(lesson_id: lesson.id, user_id: current_user.id).update(done: lesson_done)
+      selected_user_subjects = current_user.selected_user_subjects_for_course(course.id)
+
+      if selected_user_subjects.empty?
+        course.subjects.each do |subject|
+          current_user.user_subjects.find_or_create_by(subject: subject).update(selected: true)
         end
+        selected_user_subjects = current_user.selected_user_subjects_for_course(course.id)
       end
-  
-      total_lessons_count = course.lessons.joins(:subject_lessons)
-                                .where(subject_lessons: { subject_id: current_user.user_subjects.pluck(:subject_id) })
-                                .distinct.count
+
+      selected_subject_ids = selected_user_subjects.pluck(:subject_id)
+
+      lessons = course.lessons.includes(:subject_lessons)
+                          .where(subject_lessons: { subject_id: selected_subject_ids })
+
+      done_lessons_count = 0
+
+      lesson_statuses = lessons.each do |lesson|
+        lesson_done = lesson.subject_lessons.all? do |sl|
+          current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true)
+        end
+
+        done_lessons_count += 1 if lesson_done
+
+        UserLesson.find_or_initialize_by(lesson_id: lesson.id, user_id: current_user.id).update(done: lesson_done)
+      end
+
+      total_lessons_count = lessons.count
 
       status = if total_lessons_count == 0
-        'No Lesson'
-      elsif done_lessons_count == total_lessons_count
-        'Done'
-      elsif done_lessons_count > 0
-        'In Progress'
-      else
-        'Todo'
-      end
-  
+                 'No Lesson'
+               elsif done_lessons_count == total_lessons_count
+                 'Done'
+               elsif done_lessons_count > 0
+                 'In Progress'
+               else
+                 'Todo'
+               end
+
       render json: { status: status }, status: :ok
     else
       render json: { error: 'Course not found' }, status: :not_found
