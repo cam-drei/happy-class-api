@@ -13,20 +13,20 @@ class Api::V1::UserSubjectsController < ApplicationController
     render json: { message: 'User subject marked as not selected successfully' }, status: :ok
   end
 
-  def user_subjects_for_course
-    course_id = params[:course_id]
-    if course_id.present?
-      user_subjects = current_user.user_subjects_for_course(course_id)
-      render json: { user_subjects: user_subjects }, status: :ok
-    else
-      render json: { error: 'Course ID is missing' }, status: :unprocessable_entity
-    end
-  end
-
   def selected_user_subjects_for_course
     course_id = params[:course_id]
     if course_id.present?
       selected_user_subjects = current_user.selected_user_subjects_for_course(course_id)
+
+      if selected_user_subjects.empty?
+        course = Course.find(course_id)
+        course.subjects.each do |subject|
+          current_user.user_subjects.find_or_create_by(subject: subject).update(selected: true)
+        end
+
+        selected_user_subjects = current_user.selected_user_subjects_for_course(course_id)
+      end
+
       render json: { selected_user_subjects: selected_user_subjects }, status: :ok
     else
       render json: { error: 'Course ID is missing' }, status: :unprocessable_entity
@@ -45,7 +45,6 @@ class Api::V1::UserSubjectsController < ApplicationController
 
   def find_or_create_user_subject
     @user_subject = current_user.user_subjects.find_or_create_by(subject_id: params[:subject_id])
-
     if @user_subject.nil?
       render json: { error: 'User subject not found and could not be created', user_email: current_user.email, subject_id: params[:subject_id] }, status: :not_found
     end
