@@ -25,7 +25,7 @@ class Api::V1::CoursesController < ApplicationController
       {
         id: lesson.id,
         name: lesson.name,
-        done: lesson.subject_lessons.any? { |sl| current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true) },
+        done: lesson.subject_lessons.all? { |sl| current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true) },
         contents: lesson.contents.as_json(only: [:id, :video_link, :document_link]),
         subject_lessons: lesson.subject_lessons.select do |subject_lesson|
           selected_subject_ids.include?(subject_lesson.subject_id)
