@@ -65,14 +65,28 @@ class Api::V1::CoursesController < ApplicationController
     course = Course.find_by(id: params[:course_id])
     if course
       lesson_ids = course.lessons.pluck(:id)
-      done_lessons_count = UserLesson.where(lesson_id: lesson_ids, user_id: current_user.id, done: true).count
+      done_lessons_count = 0
   
       lesson_statuses = course.lessons.includes(:subject_lessons).each do |lesson|
-        lesson_done = lesson.subject_lessons.all? { |sl| current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true) }
-        UserLesson.find_or_initialize_by(lesson_id: lesson.id, user_id: current_user.id).update(done: lesson_done)
+        selected_user_subjects = current_user.user_subjects.where(subject_id: lesson.subject_lessons.pluck(:subject_id))
+  
+        if selected_user_subjects.exists?
+          lesson_done = lesson.subject_lessons.all? do |sl|
+            current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true)
+          end
+  
+          if lesson_done
+            done_lessons_count += 1
+          end
+  
+          UserLesson.find_or_initialize_by(lesson_id: lesson.id, user_id: current_user.id).update(done: lesson_done)
+        end
       end
   
-      total_lessons_count = lesson_ids.size
+      total_lessons_count = course.lessons.joins(:subject_lessons)
+                                .where(subject_lessons: { subject_id: current_user.user_subjects.pluck(:subject_id) })
+                                .distinct.count
+
       status = if total_lessons_count == 0
         'No Lesson'
       elsif done_lessons_count == total_lessons_count
@@ -90,7 +104,7 @@ class Api::V1::CoursesController < ApplicationController
   rescue StandardError => e
     Rails.logger.error "Error: #{e.message}"
     render json: { error: 'An error occurred' }, status: :internal_server_error
-  end    
+  end
 
   private
 
