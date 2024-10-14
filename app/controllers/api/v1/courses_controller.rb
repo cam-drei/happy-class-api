@@ -25,16 +25,17 @@ class Api::V1::CoursesController < ApplicationController
     selected_subject_ids = selected_user_subjects.pluck(:subject_id)
 
     lessons = @course.lessons.includes(:contents, subject_lessons: [:subject, :user_subject_lessons])
-
-    lessons = lessons.select do |lesson|
-      lesson.subject_lessons.any? { |subject_lesson| selected_subject_ids.include?(subject_lesson.subject_id) }
-    end
-
+                        .where(subject_lessons: { subject_id: selected_subject_ids })
+  
     lessons_details = lessons.map do |lesson|
+      done = lesson.subject_lessons.all? do |sl|
+        current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true)
+      end
+
       {
         id: lesson.id,
         name: lesson.name,
-        done: lesson.subject_lessons.all? { |sl| current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true) },
+        done: done,
         contents: lesson.contents.as_json(only: [:id, :video_link, :document_link]),
         subject_lessons: lesson.subject_lessons.select do |subject_lesson|
           selected_subject_ids.include?(subject_lesson.subject_id)
@@ -89,7 +90,7 @@ class Api::V1::CoursesController < ApplicationController
 
       done_lessons_count = 0
 
-      lesson_statuses = lessons.each do |lesson|
+      lessons.each do |lesson|
         lesson_done = lesson.subject_lessons.all? do |sl|
           current_user.user_subject_lessons.exists?(subject_lesson: sl, done: true)
         end
